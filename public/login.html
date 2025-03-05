@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+        }
+
+        /* 登录框样式 */
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 300px;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .login-container button:hover {
+            background: #6a11cb;
+        }
+
+        .login-container .signup-link {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .login-container .signup-link a {
+            color: #2575fc;
+            text-decoration: none;
+        }
+
+        .login-container .signup-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录框 -->
+    <div class="login-container">
+        <h2>用户登录</h2>
+        <input type="text" id="username" placeholder="用户名">
+        <input type="password" id="password" placeholder="密码">
+        <button onclick="handleLogin()">登录</button>
+        <div class="signup-link">
+            没有账号？<a href="#">立即注册</a>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 登录逻辑
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                console.log(`用户登录：用户名=${username}, 密码=${password}`);
+                alert('登录成功！');
+                // 这里可以调用埋点 SDK 上报登录事件
+                trackEvent('用户登录', { username });
+                // 登录成功后跳转到商城页，并携带用户名作为查询参数
+                window.location.href = `mall.html?username=${username}`;
+            } else {
+                alert('请输入用户名和密码！');
+            }
+        }
+
+        // 埋点函数
+        function trackEvent(eventName, data) {
+            console.log(`埋点事件：${eventName}`, data);
+            // 这里可以调用你的埋点 SDK 上报事件
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .detail-container img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        .detail-container button {
+            background: #2575fc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .detail-container button:hover {
+            background: #6a11cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-container">
+        <h1 id="productName">商品名称</h1>
+        <img id="productImage" src="" alt="商品图片">
+        <p id="productPrice">价格：¥0</p>
+        <p id="productDescription">商品描述加载中...</p>
+        <button onclick="buyProduct()" data-product-id="">购买</button>
+        <button onclick="goBack()">返回</button>
+    </div>
+
+    <script src="sdk.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        initialize({
+            userId: urlParams.get('username') || 'anonymous',
+            version: '1.0.0'
+        });
+
+        const products = {
+            product1: { name: '商品1', price: 100, description: '优质商品1，值得购买', image: 'https://via.placeholder.com/400x400?text=商品1' },
+            product2: { name: '商品2', price: 200, description: '优质商品2，性价比高', image: 'https://via.placeholder.com/400x400?text=商品2' },
+            product3: { name: '商品3', price: 300, description: '高端商品3，品质保证', image: 'https://via.placeholder.com/400x400?text=商品3' }
+        };
+
+        const productId = urlParams.get('productId');
+        if (productId && products[productId]) {
+            const product = products[productId];
+            document.getElementById('productName').textContent = product.name;
+            document.getElementById('productImage').src = product.image;
+            document.getElementById('productPrice').textContent = `价格：¥${product.price}`;
+            document.getElementById('productDescription').textContent = product.description;
+            document.querySelector('button[data-product-id]').dataset.productId = productId;
+        }
+
+        function buyProduct() {
+            const button = event.target;
+            sendEvent('button', {
+                button: `购买${productId}`,
+                positionX: button.getBoundingClientRect().x,
+                positionY: button.getBoundingClientRect().y
+            });
+            alert(`已购买 ${products[productId].name}！`);
+        }
+
+        function goBack() {
+            window.location.href = `mall.html?username=${urlParams.get('username') || ''}`;
+        }
+
+        sendEvent('page', {
+            pagePath: window.location.pathname,
+            referrer: document.referrer
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91b8288579a41399',t:'MTc0MTE2MjQ1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
