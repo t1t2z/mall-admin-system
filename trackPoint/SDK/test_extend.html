@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试埋点 SDK</title>
+    <script src="sdk.js"></script>  <!-- 只需要引入 SDK -->
+</head>
+<body>
+
+    <button id="test-button">点击按钮</button>
+    <form id="test-form">
+        <input type="text" name="username" placeholder="输入用户名">
+        <button type="submit">提交表单</button>
+    </form>
+    <button id="trigger-error">触发错误</button>
+
+    <script>
+        // 确保 SDK 已初始化
+        SDK.initialize({
+            userId: 123,
+            browser: navigator.userAgent,
+            version:'1.0.0'
+        });
+
+        // 监听按钮点击事件
+        document.getElementById('test-button').addEventListener('click', (event) => {
+            SDK.sendEvent('button', {
+                button: event.target.innerText,
+                positionX: event.clientX,
+                positionY: event.clientY
+            });
+        });
+
+        // 监听表单提交事件
+        document.getElementById('test-form').addEventListener('submit', (event) => {
+            event.preventDefault();  // 阻止默认提交行为
+            const formData = new FormData(event.target);
+            SDK.sendEvent('form', {
+                formId: event.target.id,
+                valid: formData.get('username') ? 1 : 0, // 用户名是否填写
+                form: 'test-form'
+            });
+        });
+
+        // 监听错误事件
+        document.getElementById('trigger-error').addEventListener('click', () => {
+            try {
+                throw new Error('这是一个模拟错误');
+            } catch (error) {
+                SDK.sendEvent('error', {
+                    errorMessage: error.message,
+                    errorStack: error.stack
+                });
+            }
+        });
+
+        // 监听页面跳转
+        SDK.sendEvent('page', {
+            pagePath: window.location.pathname,
+            referrer: document.referrer
+        });
+
+    </script>
+</body>
+</html>

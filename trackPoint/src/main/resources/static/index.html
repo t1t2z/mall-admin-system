@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script type="text/javascript">
+        var stompClient = null;
+
+        function connect() {
+            var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/public', function (response) {
+                    console.log('Received: ', response);
+                    showMessage(response.body);
+                });
+            });
+        }
+
+        function requestSalesData() {
+            var buttonType = document.getElementById('buttonType').value;
+            var startTime = document.getElementById('startTime').value;
+            var endTime = document.getElementById('endTime').value;
+
+            // 格式化日期时间
+            startTime = startTime.replace('T', ' ') + ':00';
+            endTime = endTime.replace('T', ' ') + ':00';
+
+            var data = {
+                startTime: startTime,
+                endTime: endTime
+            };
+
+            console.log('Sending data: ', data);
+            stompClient.send("/app/sales", {}, JSON.stringify(data));
+        }
+
+        function setTestData() {
+            // 设置测试数据
+            document.getElementById('buttonType').value = '1';
+            document.getElementById('startTime').value = '2025-02-06T00:00';
+            document.getElementById('endTime').value = '2025-02-08T00:00';
+        }
+
+        function showMessage(message) {
+            var response = document.getElementById('response');
+            response.innerHTML = '';
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+            try {
+                // 尝试解析 JSON，如果失败则直接显示消息
+                var parsed = JSON.parse(message);
+                p.appendChild(document.createTextNode('按钮点击次数: ' + parsed));
+            } catch (e) {
+                p.appendChild(document.createTextNode(message));
+            }
+            response.appendChild(p);
+        }
+
+        function requestMenberData() {
+            stompClient.send("/app/menber", {}, "");
+        }
+
+        window.onload = connect;
+    </script>
+</head>
+<body>
+<h1>WebSocket Test</h1>
+<div>
+    <p>
+        <label>按钮类型：</label>
+        <input type="number" id="buttonType" min="1" max="6">
+    </p>
+    <p>
+        <label>开始时间：</label>
+        <input type="datetime-local" id="startTime">
+    </p>
+    <p>
+        <label>结束时间：</label>
+        <input type="datetime-local" id="endTime">
+    </p>
+    <button onclick="setTestData()">填充测试数据</button>
+    <button onclick="requestSalesData()">查询按钮数据</button>
+    <button onclick="requestMenberData()">查询成员数据</button>
+</div>
+<div id="response"></div>
+</body>
+</html>
